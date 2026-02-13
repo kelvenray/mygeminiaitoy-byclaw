@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini AI 助手</title>
+    <link rel="stylesheet" href="style.css?v=20260211l">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Markdown 渲染库 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <!-- 登录页面 -->
+    <div id="login-page" class="page active">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="logo">
+                    <i class="fas fa-robot"></i>
+                    <h1>Gemini AI</h1>
+                </div>
+                <p class="subtitle">智能对话与图像生成平台</p>
+            </div>
+            
+            <div class="login-form">
+                <div class="form-group">
+                    <label for="username">
+                        <i class="fas fa-user"></i> 用户名
+                    </label>
+                    <input type="text" id="username" placeholder="请输入用户名">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i> 密码
+                    </label>
+                    <input type="password" id="password" placeholder="请输入密码">
+                </div>
+                
+                <div class="form-options">
+                    <label class="checkbox">
+                        <input type="checkbox" id="remember">
+                        <span>记住我</span>
+                    </label>
+                    <a href="#" class="forgot-password">忘记密码？</a>
+                </div>
+                
+                <button id="login-btn" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> 登录
+                </button>
+                
+                <div class="divider">
+                    <span>或</span>
+                </div>
+                
+                <button id="register-btn" class="btn btn-secondary">
+                    <i class="fas fa-user-plus"></i> 注册新账户
+                </button>
+            </div>
+            
+            <div class="login-footer">
+                <p>使用 Gemini API 进行智能对话和图像生成</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主应用页面 -->
+    <div id="app-page" class="page">
+        <!-- 移动端固定菜单按钮 -->
+        <button id="mobile-menu-btn" class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-robot"></i>
+                    <h2>Gemini AI</h2>
+                </div>
+                <button class="sidebar-close-btn" id="sidebar-close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+                <button class="sidebar-toggle" id="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <div class="user-info">
+                <div class="avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-details">
+                    <h3 id="current-user">用户</h3>
+                    <p class="user-status">在线</p>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-page="chat">
+                    <i class="fas fa-comments"></i>
+                    <span>智能对话</span>
+                </a>
+                <a href="#" class="nav-item" data-page="image">
+                    <i class="fas fa-image"></i>
+                    <span>图像生成</span>
+                </a>
+                <a href="#" class="nav-item" data-page="history">
+                    <i class="fas fa-history"></i>
+                    <span>历史记录</span>
+                </a>
+                <a href="#" class="nav-item" data-page="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>API 设置</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="btn btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> 退出登录
+                </button>
+            </div>
+        </div>
+        
+        <!-- 侧边栏遮罩层 -->
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 聊天页面 -->
+            <div id="chat-page" class="content-page active">
+                <div class="page-header">
+                    <h1><i class="fas fa-comments"></i> 智能对话</h1>
+                    <p class="page-description">与 Gemini AI 进行自然对话，获取智能回复</p>
+                </div>
+                
+                <div class="chat-container">
+                    <div class="chat-messages" id="chat-messages">
+                        <!-- 消息会动态添加到这里 -->
+                        <div class="message welcome">
+                            <div class="message-content">
+                                <strong>Gemini AI:</strong> 你好！我是 Gemini AI 助手。我可以帮你回答问题、进行对话，还可以生成图像。有什么可以帮你的吗？
+                            </div>
+                            <div class="message-time">刚刚</div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input-area">
+                        <div class="input-toolbar">
+                            <div class="input-tools">
+                                <input type="file" id="chat-attachment" accept="image/*,.pdf,.txt,.md,.csv" multiple style="display: none;">
+                                <button class="tool-btn" id="attachment-btn" title="上传文件（图片、PDF、文本）">
+                                    <i class="fas fa-paperclip"></i>
+                                </button>
+                                <button class="tool-btn" id="clear-chat-btn" title="清除对话">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                            <div class="model-selector">
+                                <label for="model-select">
+                                    <i class="fas fa-brain"></i> 模型:
+                                </label>
+                                <select id="model-select">
+                                    <option value="gemini-3-pro-preview" selected>Gemini 3 Pro</option>
+                                    <option value="gemini-3-flash-preview">Gemini 3 Flash</option>
+                                    <option value="gemini-2.5-pro-preview">Gemini 2.5 Pro</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="attachments-preview" id="attachments-preview"></div>
+                        
+                        <div class="input-wrapper">
+                            <textarea 
+                                id="chat-input" 
+                                placeholder="输入你的消息... (按 Shift+Enter 换行，Enter 发送)"
+                                rows="1"
+                            ></textarea>
+                            <button id="send-btn" class="btn btn-send">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="typing-indicator" id="typing-indicator">
+                            <i class="fas fa-circle"></i>
+                            <i class="fas fa-circle"></i>
+                            <i class="fas fa-circle"></i>
+                            Gemini 正在思考...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 图像生成页面 -->
+            <div id="image-page" class="content-page">
+                <div class="page-header">
+                    <h1><i class="fas fa-image"></i> 图像生成</h1>
+                    <p class="page-description">使用 Gemini 生成高质量的图像</p>
+                </div>
+                
+                <div class="image-generator">
+                    <div class="prompt-section">
+                        <div class="image-toolbar">
+                            <div class="image-tools">
+                                <input type="file" id="reference-image" accept="image/*" multiple style="display: none;">
+                                <button class="tool-btn" id="upload-reference-btn" title="上传参考图片">
+                                    <i class="fas fa-image"></i>
+                                </button>
+                            </div>
+                            <div class="image-options">
+                                <select id="image-model-select" title="选择模型">
+                                    <option value="gemini-3-pro-image-preview" selected>Gemini 3 Pro</option>
+                                    <option value="gemini-2.0-flash-exp-image-generation">2.0 Flash</option>
+                                    <option value="imagen-3.0-generate-002">Imagen 3</option>
+                                </select>
+                                <select id="style-select" title="选择风格">
+                                    <option value="">N.A</option>
+                                    <option value="realistic">写实</option>
+                                    <option value="cartoon">卡通</option>
+                                    <option value="watercolor">水彩</option>
+                                    <option value="digital-art">数字艺术</option>
+                                </select>
+                                <select id="size-select" title="选择尺寸">
+                                    <option value="">N.A</option>
+                                    <option value="1024x1024">1:1</option>
+                                    <option value="1792x1024">16:9</option>
+                                    <option value="1024x1792">9:16</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="reference-previews" id="reference-previews"></div>
+                        
+                        <div class="image-input-wrapper">
+                            <textarea 
+                                id="image-prompt" 
+                                placeholder="详细描述你想要生成的图像... 例如：'一只可爱的熊猫在竹林里吃竹子，阳光透过竹叶洒下来，风格是水彩画'"
+                                rows="4"
+                            ></textarea>
+                            <button id="generate-btn" class="btn btn-generate-fab" title="生成图像">
+                                <i class="fas fa-magic"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="prompt-examples">
+                            <button class="example-btn" data-prompt="一只可爱的熊猫在竹林里吃竹子">
+                                <i class="fas fa-lightbulb"></i> 熊猫
+                            </button>
+                            <button class="example-btn" data-prompt="未来城市的夜景，霓虹灯光，飞行汽车">
+                                <i class="fas fa-lightbulb"></i> 未来城市
+                            </button>
+                            <button class="example-btn" data-prompt="宁静的山水画，有瀑布和松树">
+                                <i class="fas fa-lightbulb"></i> 山水画
+                            </button>
+                        </div>
+                        
+                        <div class="loading-indicator" id="image-loading">
+                            <div class="spinner"></div>
+                            <p>正在生成图像，这可能需要几秒钟...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="results-section">
+                        <div class="image-grid" id="image-grid">
+                            <!-- 生成的图像会显示在这里 -->
+                            <div class="image-placeholder">
+                                <i class="fas fa-image"></i>
+                                <p>生成的图像将显示在这里</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API 设置页面 -->
+            <div id="settings-page" class="content-page">
+                <div class="page-header">
+                    <h1><i class="fas fa-cog"></i> API 设置</h1>
+                    <p class="page-description">配置 Gemini API 访问参数</p>
+                </div>
+                
+                <div class="settings-container">
+                    <div class="settings-card">
+                        <div class="settings-header">
+                            <h3><i class="fas fa-key"></i> API 配置</h3>
+                            <div class="status-badge" id="api-status">
+                                <i class="fas fa-circle"></i>
+                                <span>未配置</span>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-form">
+                            <div class="form-group">
+                                <label for="api-url">
+                                    <i class="fas fa-link"></i> API 中转地址
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="api-url" 
+                                    placeholder="https://your-proxy-server.com/api/v1"
+                                    value=""
+                                >
+                                <p class="form-help">请输入 Gemini API 的中转代理地址</p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="api-key">
+                                    <i class="fas fa-key"></i> API 密钥
+                                </label>
+                                <div class="password-wrapper">
+                                    <input 
+                                        type="password" 
+                                        id="api-key" 
+                                        placeholder="输入你的 Gemini API 密钥"
+                                    >
+                                    <button class="toggle-password" id="toggle-api-key">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <p class="form-help">你的 API 密钥将安全地存储在本地浏览器中</p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="model-default">
+                                    <i class="fas fa-brain"></i> 默认模型
+                                </label>
+                                <select id="model-default">
+                                    <option value="gemini-3-pro-preview" selected>Gemini 3 Pro</option>
+                                    <option value="gemini-3-flash-preview">Gemini 3 Flash</option>
+                                    <option value="gemini-2.5-pro-preview">Gemini 2.5 Pro</option>
+                                </select>
+                            </div>
+                            
+                            <div class="settings-actions">
+                                <button id="test-api-btn" class="btn btn-test">
+                                    <i class="fas fa-vial"></i> 测试连接
+                                </button>
+                                <button id="save-settings-btn" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> 保存设置
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-card">
+                        <div class="settings-header">
+                            <h3><i class="fas fa-info-circle"></i> 使用说明</h3>
+                        </div>
+                        
+                        <div class="instructions">
+                            <div class="instruction-step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4>获取 API 密钥</h4>
+                                    <p>访问 Google AI Studio 获取 Gemini API 密钥</p>
+                                </div>
+                            </div>
+                            
+                            <div class="instruction-step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4>配置中转地址</h4>
+                                    <p>输入你的 Gemini API 中转代理服务器地址</p>
+                                </div>
+                            </div>
+                            
+                            <div class="instruction-step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4>开始使用</h4>
+                                    <p>保存设置后，即可开始对话和生成图像</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 历史记录页面 -->
+            <div id="history-page" class="content-page">
+                <div class="page-header">
+                    <h1><i class="fas fa-history"></i> 历史记录</h1>
+                    <p class="page-description">查看你的对话和图像生成历史</p>
+                </div>
+                
+                <div class="history-container">
+                    <div class="history-tabs">
+                        <button class="history-tab active" data-type="chat">对话历史</button>
+                        <button class="history-tab" data-type="image">图像历史</button>
+                    </div>
+                    
+                    <div class="history-content">
+                        <div class="history-list" id="chat-history">
+                            <!-- 对话历史会显示在这里 -->
+                            <div class="history-item">
+                                <div class="history-icon">
+                                    <i class="fas fa-comment"></i>
+                                </div>
+                                <div class="history-details">
+                                    <h4>欢迎对话</h4>
+                                    <p>Gemini AI: 你好！我是 Gemini AI 助手...</p>
+                                    <div class="history-meta">
+                                        <span class="time">刚刚</span>
+                                        <span class="model">Gemini Pro</span>
+                                    </div>
+                                </div>
+                                <button class="history-action">
+                                    <i class="fas fa-redo"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="history-list" id="image-history" style="display: none;">
+                            <!-- 图像历史会显示在这里 -->
+                            <div class="history-item image-item">
+                                <div class="history-icon">
+                                    <i class="fas fa-image"></i>
+                                </div>
+                                <div class="history-details">
+                                    <h4>示例图像</h4>
+                                    <p>一只可爱的熊猫在竹林里吃竹子</p>
+                                    <div class="history-meta">
+                                        <span class="time">--</span>
+                                        <span class="style">写实风格</span>
+                                        <span class="size">1024×1024</span>
+                                    </div>
+                                </div>
+                                <button class="history-action">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js?v=20260211l"></script>
+</body>
+</html>
